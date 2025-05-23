@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bubble Map with Label Boxes</title>
+  <style>
+    html, body, #chartdiv {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+  <!-- amCharts 5 CDN -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+</head>
+
+
+
+<body>
+    <div style="padding: 10px; font-family: sans-serif;">
+      <label for="groupFilter">Group:</label>
+      <select id="groupFilter">
+        <option value="ALL">All</option>
+      </select>
+  
+      <label for="cityFilter" style="margin-left: 20px;">City:</label>
+      <select id="cityFilter">
+        <option value="ALL">All</option>
+      </select>
+    </div>
+    <div id="chartdiv" style="height: calc(100% - 50px);"></div>
+  
+  <script>
+  const rawData = [
+{ city: "Shanghai", capacity: 3000, group: "Panasonic_BI-MWO/FS-MWO", lat: 31.224361, lon: 121.46917 }, 
+{ city: "Jiaxing", capacity: 3000, group: "Panasonic_BI-MWO/FS-MWO", lat: 30.7667, lon: 120.75 }, 
+{ city: "Cardif", capacity: 300, group: "Panasonic_BI-MWO/FS-MWO", lat: 51.4837, lon: -3.1681 }, 
+{ city: "Manaus", capacity: 0, group: "Panasonic_FS-MWO", lat: -3.1019, lon: -60.025 }, 
+{ city: "Foshan", capacity: 100, group: "Aug_BI-MWO", lat: 23.02677, lon: 113.13148 }, 
+{ city: "Zhongshan", capacity: 30000, group: "Galanz_BI-MWO/FS-MWO", lat: 22.516998, lon: 113.392723 }, 
+{ city: "Hefei", capacity: 300, group: "Galanz_BI-MWO/FS-MWO", lat: 31.86389, lon: 117.28083 }, 
+{ city: "Manaus", capacity: 0, group: "Whirlpool_FS-MWO", lat: -3.1019, lon: -60.025 }, 
+{ city: "Foshan", capacity: 38900, group: "Midea_BI-MWO/FS-MWO", lat: 23.02677, lon: 113.13148 }, 
+{ city: "Bangkok", capacity: 400, group: "Midea_FS-MWO", lat: 13.736717, lon: 100.523186 }, 
+{ city: "Minsk", capacity: 1100, group: "Midea_FS-MWO", lat: 53.893009, lon: 27.567444 }, 
+{ city: "Manaus", capacity: 500, group: "Midea_FS-MWO", lat: -3.1019, lon: -60.025 }, 
+{ city: "Jiangmen", capacity: 100, group: "Timzuu_BI-MWO", lat: 22.58333, lon: 113.08333 }, 
+{ city: "Zhongshan", capacity: 1000, group: "Weili_BI-MWO/FS-MWO", lat: 22.516998, lon: 113.392723 }, 
+{ city: "Changwon", capacity: 1000, group: "LG_N.A.", lat: 35.2281, lon: 128.6811 }, 
+{ city: "Tianjin", capacity: 5500, group: "LG_N.A.", lat: 39.125229, lon: 117.015343 }, 
+{ city: "Noida", capacity: 1000, group: "LG_N.A.", lat: 28.535517, lon: 77.391029 }, 
+{ city: "Pune", capacity: 300, group: "LG_N.A.", lat: 18.516726, lon: 73.856255 }, 
+{ city: "Manaus", capacity: 300, group: "LG_N.A.", lat: -3.1019, lon: -60.025 }, 
+{ city: "Port Klang", capacity: 7500, group: "Samsung_N.A.", lat: 3, lon: 101.4 }, 
+{ city: "Shipur", capacity: 0, group: "Samsung_N.A.", lat: 21.775, lon: 87.4728 }, 
+{ city: "Queretaro", capacity: 1000, group: "Samsung_N.A.", lat: 20.5888, lon: -100.3899 }, 
+{ city: "Swidnica", capacity: 1200, group: "Electrolux_N.A.", lat: 50.8498, lon: 16.4757 }, 
+{ city: "Manaus", capacity: 1100, group: "Electrolux_N.A.", lat: -3.1019, lon: -60.025 }, 
+{ city: "Memphis", capacity: 0, group: "Sharp_N.A.", lat: 35.1486, lon: -90.0519 }, 
+{ city: "Chachoengsao", capacity: 0, group: "Sharp_N.A.", lat: 13.5491, lon: 101.6158 }, 
+{ city: "Karachi", capacity: 1000, group: "Arcelik_N.A.", lat: 24.8607, lon: 67.0011 }, 
+{ city: "Qingdao", capacity: 6000, group: "Aucma_N.A.", lat: 36.0662, lon: 120.383 }, 
+{ city: "Qingdao", capacity: 5500, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 36.0662, lon: 120.383 }, 
+{ city: "Foshan", capacity: 4500, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 23.02677, lon: 113.13148 }, 
+{ city: "Yangzhou", capacity: 5000, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 32.3936, lon: 119.4127 }, 
+{ city: "Chengdu", capacity: 2000, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 30.5723, lon: 104.0665 }, 
+{ city: "Capetown", capacity: 550, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: -33.9221, lon: 18.4231 }, 
+{ city: "Monterrey", capacity: 300, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 25.6866, lon: -100.3161 }, 
+{ city: "Velenje", capacity: 1750, group: "Hisense_CD/MD/SBS/BI/SD/BF/TM", lat: 46.3623, lon: 15.1107 }, 
+{ city: "Hefei", capacity: 1000, group: "Snowky_CD/MD/SBS/BI/TD", lat: 31.86389, lon: 117.28083 }, 
+{ city: "Hefei", capacity: 6000, group: "Changhong_CD/MD/SBS/BI/SD/BF/TM", lat: 31.86389, lon: 117.28083 }, 
+{ city: "Jingdezhen", capacity: 2500, group: "Changhong_CD/MD/SBS/BI/SD/BF/TM", lat: 29.2687, lon: 117.1784 }, 
+{ city: "Mianyang", capacity: 1610, group: "Changhong_CD/MD/SBS/BI/SD/BF/TM", lat: 31.4675, lon: 104.6796 }, 
+{ city: "Kazan", capacity: 600, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: 55.7879, lon: 49.1233 }, 
+{ city: "Hefei", capacity: 11000, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: 31.86389, lon: 117.28083 }, 
+{ city: "Jinzhou", capacity: 12000, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: 41.0951, lon: 121.127 }, 
+{ city: "Guangzhou", capacity: 5000, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: 23.1291, lon: 113.2644 }, 
+{ city: "Pouso Alegre", capacity: 1300, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: -22.2271, lon: -45.9394 }, 
+{ city: "Sadat", capacity: 300, group: "Midea_CD/MD/SBS/BF/TM/SD/WC", lat: 25.672, lon: 83.3014 }, 
+{ city: "Zhongshan", capacity: 16000, group: "Homa_CD/MD/SBS/BI/SD/BF/TM", lat: 22.516998, lon: 113.392723 }, 
+{ city: "Nanjing", capacity: 3200, group: "Skyworth_N.A.", lat: 32.0584, lon: 118.7965 }, 
+{ city: "Hefei", capacity: 3000, group: "TCL_CD/MD/SBS/BF/TM", lat: 31.86389, lon: 117.28083 }, 
+{ city: "Guangzhou", capacity: 3000, group: "Wanbao_N.A.", lat: 23.1291, lon: 113.2644 }, 
+{ city: "Minquan", capacity: 700, group: "Wanbao_N.A.", lat: 34.6762, lon: 115.4071 }, 
+{ city: "Meizhou", capacity: 1300, group: "Wanbao_N.A.", lat: 24.2884, lon: 116.1226 }, 
+{ city: "Ochsenhausen", capacity: 2800, group: "Liebherr_N.A.", lat: 48.0695, lon: 9.9516 }, 
+{ city: "Tijuana", capacity: 110, group: "Panasonic_N.A.", lat: 32.5332, lon: -117.0193 }, 
+{ city: "Guastalla", capacity: 100, group: "Smeg_N.A.", lat: 44.9213, lon: 10.6543 }, 
+{ city: "Manisa", capacity: 4700, group: "Vestel_N.A.", lat: 38.614, lon: 27.4296 }, 
+{ city: "Esbjerg", capacity: 100, group: "Vestfrost_N.A.", lat: 55.4765, lon: 8.4594 }, 
+{ city: "Shanghai", capacity: 5000, group: "Sonlu_N.A.", lat: 31.224361, lon: 121.46917 }, 
+{ city: "Suqian", capacity: 3000, group: "Sonlu_N.A.", lat: 33.9619, lon: 118.2755 }, 
+{ city: "Xinyi", capacity: 1000, group: "Sonlu_N.A.", lat: 25.0409, lon: 121.572 },
+]; // your full rawData array here
+  
+  // Group and sum
+  const groupedData = {};
+  rawData.forEach(d => {
+    const key = `${d.city}|${d.group}`;
+    if (!groupedData[key]) {
+      groupedData[key] = { ...d, capacity: 0 };
+    }
+    groupedData[key].capacity += d.capacity;
+  });
+  const finalData = Object.values(groupedData);
+  
+  // Get unique cities and groups
+  const uniqueCities = [...new Set(finalData.map(d => d.city))].sort();
+  const uniqueGroups = [...new Set(finalData.map(d => d.group))].sort();
+  
+  // Populate filters
+  const groupSelect = document.getElementById("groupFilter");
+  uniqueGroups.forEach(group => {
+    const opt = document.createElement("option");
+    opt.value = group;
+    opt.textContent = group;
+    groupSelect.appendChild(opt);
+  });
+  
+  const citySelect = document.getElementById("cityFilter");
+  uniqueCities.forEach(city => {
+    const opt = document.createElement("option");
+    opt.value = city;
+    opt.textContent = city;
+    citySelect.appendChild(opt);
+  });
+  
+  // Set offsets
+  const addOffsets = (data) => {
+    const cityOffsets = {};
+    data.forEach(d => {
+      const cityKey = `${d.lat},${d.lon}`;
+      if (!cityOffsets[cityKey]) cityOffsets[cityKey] = 0;
+      d.offsetIndex = cityOffsets[cityKey]++;
+    });
+    return data;
+  };
+  
+  let chart, root, bubbleSeries;
+  
+  function drawChart(filteredData) {
+    if (root) root.dispose(); // clean before re-render
+  
+    am5.ready(function() {
+      root = am5.Root.new("chartdiv");
+      root.setThemes([am5themes_Animated.new(root)]);
+  
+      chart = root.container.children.push(am5map.MapChart.new(root, {
+        panX: "rotateX",
+        panY: "translateY",
+        projection: am5map.geoMercator(),
+        layout: root.verticalLayout
+      }));
+  
+      const bg = chart.series.push(am5map.MapPolygonSeries.new(root, {
+        geoJSON: am5geodata_worldLow,
+        exclude: ["AQ"]
+      }));
+  
+      bg.mapPolygons.template.setAll({
+        fill: am5.color(0x6794dc),
+        stroke: am5.color(0xbbbbbb),
+        tooltipText: "{name}",
+        interactive: true
+      });
+  
+      bubbleSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+  
+      bubbleSeries.bullets.push(function(root, series, dataItem) {
+        const container = am5.Container.new(root, {
+          layout: root.horizontalLayout,
+          fill: am5.color(0xffffff),
+          centerY: am5.p50,
+          dy: dataItem.dataContext.offsetIndex * 25 - 10
+        });
+  
+        const circle = container.children.push(am5.Circle.new(root, {
+          radius: Math.sqrt(dataItem.dataContext.capacity) * 0.2 + 3,
+          fill: am5.color(0x02182e),
+          fillOpacity: 0.7,
+          tooltipText: `{city} - {group}\nCapacity: {capacity}`
+        }));
+  
+        const labelBox = container.children.push(am5.Container.new(root, {
+          background: am5.RoundedRectangle.new(root, {
+            fill: am5.color(0xffffff),
+            fillOpacity: 0.7,
+            stroke: am5.color(0x444444),
+            cornerRadius: 3
+          }),
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          centerY: am5.p50
+        }));
+  
+        labelBox.children.push(am5.Label.new(root, {
+          text: `{city}\n{group}\n{capacity}`,
+          fontSize: 12,
+          fill: am5.color(0x111111),
+          populateText: true,
+          oversizedBehavior: "wrap",
+          textAlign: "left"
+        }));
+  
+        return am5.Bullet.new(root, {
+          sprite: container
+        });
+      });
+  
+      bubbleSeries.data.setAll(addOffsets(filteredData).map(d => ({
+        geometry: { type: "Point", coordinates: [d.lon, d.lat] },
+        ...d
+      })));
+  
+      chart.appear(1000, 100);
+    });
+  }
+  
+  // Filter logic
+  function applyFilters() {
+    const selectedGroup = groupSelect.value;
+    const selectedCity = citySelect.value;
+  
+    const filtered = finalData.filter(d =>
+      (selectedGroup === "ALL" || d.group === selectedGroup) &&
+      (selectedCity === "ALL" || d.city === selectedCity)
+    );
+  
+    drawChart(filtered);
+  }
+  
+  groupSelect.addEventListener("change", applyFilters);
+  citySelect.addEventListener("change", applyFilters);
+  
+  // Initial render
+  applyFilters();
+  </script>
+  </body>
+  
